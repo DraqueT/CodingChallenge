@@ -1,0 +1,51 @@
+{
+  "warehouses": [
+    { "id": "WH-EAST-1",    "name": "Edison NJ Fulfillment Center",   "region": "NORTHEAST" },
+    { "id": "WH-SOUTH-1",   "name": "Atlanta GA Fulfillment Center",  "region": "SOUTHEAST" },
+    { "id": "WH-MIDWEST-1", "name": "Columbus OH Fulfillment Center", "region": "MIDWEST" },
+    { "id": "WH-WEST-1",    "name": "Reno NV Fulfillment Center",     "region": "WEST" },
+    { "id": "WH-SOUTH-2",   "name": "Dallas TX Fulfillment Center",   "region": "SOUTHWEST" }
+  ],
+  "inventory": [
+    { "warehouseId": "WH-EAST-1",    "sku": "SKU-WIDGET-BLUE",   "quantity": 50 },
+    { "warehouseId": "WH-SOUTH-1",   "sku": "SKU-WIDGET-BLUE",   "quantity": 30 },
+    { "warehouseId": "WH-MIDWEST-1", "sku": "SKU-WIDGET-BLUE",   "quantity": 20 },
+    { "warehouseId": "WH-WEST-1",    "sku": "SKU-WIDGET-BLUE",   "quantity": 15 },
+    { "warehouseId": "WH-SOUTH-2",   "sku": "SKU-WIDGET-BLUE",   "quantity": 10 },
+
+    { "warehouseId": "WH-EAST-1",    "sku": "SKU-WIDGET-RED",    "quantity": 5 },
+    { "warehouseId": "WH-SOUTH-1",   "sku": "SKU-WIDGET-RED",    "quantity": 40 },
+    { "warehouseId": "WH-MIDWEST-1", "sku": "SKU-WIDGET-RED",    "quantity": 2 },
+
+    { "warehouseId": "WH-WEST-1",    "sku": "SKU-GADGET-RED",    "quantity": 25 },
+    { "warehouseId": "WH-SOUTH-2",   "sku": "SKU-GADGET-RED",    "quantity": 18 },
+
+    { "warehouseId": "WH-EAST-1",    "sku": "SKU-GADGET-GREEN",  "quantity": 3 },
+    { "warehouseId": "WH-SOUTH-1",   "sku": "SKU-GADGET-GREEN",  "quantity": 4 },
+    { "warehouseId": "WH-MIDWEST-1", "sku": "SKU-GADGET-GREEN",  "quantity": 2 },
+    { "warehouseId": "WH-WEST-1",    "sku": "SKU-GADGET-GREEN",  "quantity": 5 },
+    { "warehouseId": "WH-SOUTH-2",   "sku": "SKU-GADGET-GREEN",  "quantity": 1 },
+
+    { "warehouseId": "WH-MIDWEST-1", "sku": "SKU-GIZMO-SILVER",  "quantity": 60 },
+
+    { "warehouseId": "WH-EAST-1",    "sku": "SKU-GIZMO-GOLD",    "quantity": 1 },
+    { "warehouseId": "WH-SOUTH-1",   "sku": "SKU-GIZMO-GOLD",    "quantity": 2 },
+    { "warehouseId": "WH-WEST-1",    "sku": "SKU-GIZMO-GOLD",    "quantity": 1 },
+
+    { "warehouseId": "WH-EAST-1",    "sku": "SKU-CABLE-USB-C",   "quantity": 100 },
+    { "warehouseId": "WH-SOUTH-1",   "sku": "SKU-CABLE-USB-C",   "quantity": 100 },
+    { "warehouseId": "WH-MIDWEST-1", "sku": "SKU-CABLE-USB-C",   "quantity": 100 },
+    { "warehouseId": "WH-WEST-1",    "sku": "SKU-CABLE-USB-C",   "quantity": 100 },
+    { "warehouseId": "WH-SOUTH-2",   "sku": "SKU-CABLE-USB-C",   "quantity": 100 },
+
+    { "warehouseId": "WH-EAST-1",    "sku": "SKU-ADAPTER-HDMI",  "quantity": 35 },
+    { "warehouseId": "WH-SOUTH-1",   "sku": "SKU-ADAPTER-HDMI",  "quantity": 20 },
+    { "warehouseId": "WH-MIDWEST-1", "sku": "SKU-ADAPTER-HDMI",  "quantity": 15 },
+    { "warehouseId": "WH-WEST-1",    "sku": "SKU-ADAPTER-HDMI",  "quantity": 10 },
+
+    { "warehouseId": "WH-EAST-1",    "sku": "SKU-BATTERY-AAA",   "quantity": 200 },
+    { "warehouseId": "WH-MIDWEST-1", "sku": "SKU-BATTERY-AAA",   "quantity": 150 },
+
+    { "warehouseId": "WH-SOUTH-2",   "sku": "SKU-CHARGER-FAST",  "quantity": 8 }
+  ]
+}

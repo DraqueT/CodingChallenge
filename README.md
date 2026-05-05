@@ -62,3 +62,25 @@ We are **not** evaluating:
 ## Questions?
 
 If anything in the requirements is ambiguous, make a reasonable assumption and document it in `DECISIONS.md`. This is intentional — we want to see how you handle ambiguity.
+
+## Solution Notes
+
+This repository now includes a Python implementation of the Order Routing Service using FastAPI, Pydantic, pytest, and in-memory fixtures loaded from `data/fixtures.json`.
+
+### Run Locally
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+The API will be available at `http://127.0.0.1:8000`, and the interactive docs will be available at `http://127.0.0.1:8000/docs`.
+
+### Run Tests
+
+```bash
+source .venv/bin/activate
+pytest
+```

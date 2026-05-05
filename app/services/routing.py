@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from itertools import combinations
 
 from app.models.api import (
     FulfillmentPlanEntry,
@@ -92,7 +93,19 @@ class RoutingService:
                 unfulfillableItems=unfulfillable_items,
             )
 
-        return None  # to be handled by split plans...
+        best_plan = self._best_split_plan(
+            destination=order.shipping_destination.region,
+            warehouses=self.repository.all_warehouses(),
+            line_items=line_items,
+        )
+        fulfillment_plan = self._serialize_plan(best_plan.warehouse_plans)
+        unfulfillable_items = self._build_unfulfillable_items(line_items, best_plan.fulfilled_by_sku)
+        return OrderRouteResponse(
+            orderId=order.order_id,
+            status=self.fulfill_status_for(best_plan.fulfilled_units, total_requested_units),
+            fulfillmentPlan=fulfillment_plan,
+            unfulfillableItems=unfulfillable_items,
+        )
 
     # Find best matching warehouse for a given set of line items
     def _single_warehouse_plan(
@@ -139,6 +152,93 @@ class RoutingService:
                 plan.warehouse_plans[0].warehouse.id,
             ),
         )
+
+    def _best_split_plan(
+        self,
+        destination: Region,
+        warehouses: list[Warehouse],
+        line_items: list[OrderLineItem],
+    ) -> CandidatePlan:
+        candidates: list[CandidatePlan] = []
+
+        # this is a inefficient and would not scale well: current sku location metadata stored/updated could help here
+        for subset_size in range(1, len(warehouses) + 1):
+            for subset in combinations(warehouses, subset_size):
+                candidate = self._plan_for_subset(destination, list(subset), line_items)
+                candidates.append(candidate)
+
+        # return highest ranked order (preference importance desc)
+        return min(
+            candidates,
+            key=lambda plan: (
+                -plan.fulfilled_units,  # first to ensure preference for fulfilling entire order above all else
+                plan.warehouse_count,
+                plan.proximity_score,
+                -plan.inventory_score,
+                tuple(entry.warehouse.id for entry in plan.warehouse_plans),
+            ),
+        )
+
+    def _plan_for_subset(
+        self,
+        destination: Region,
+        warehouses: list[Warehouse],
+        line_items: list[OrderLineItem],
+    ) -> CandidatePlan:
+        ranked_warehouses = sorted(
+            warehouses,
+            key=lambda warehouse: (
+                self._region_rank(destination, warehouse.region),
+                -self._warehouse_inventory_score(warehouse.id, line_items),
+                warehouse.id,
+            ),
+        )
+
+        allocations: dict[str, list[tuple[str, int]]] = {warehouse.id: [] for warehouse in ranked_warehouses}
+        fulfilled_by_sku: dict[str, int] = {}
+
+        for line_item in line_items:
+            remaining = line_item.quantity
+            fulfilled = 0
+            for warehouse in ranked_warehouses:
+                if remaining == 0:
+                    break
+                available = self.repository.warehouse_sku_count(warehouse.id, line_item.sku)
+                if available <= 0:
+                    continue
+                allocated = min(available, remaining)
+                allocations[warehouse.id].append((line_item.sku, allocated))
+                remaining -= allocated
+                fulfilled += allocated
+            fulfilled_by_sku[line_item.sku] = fulfilled
+
+        warehouse_plans = tuple(
+            WarehousePlan(warehouse=warehouse, items=tuple(allocations[warehouse.id]))
+            for warehouse in ranked_warehouses
+            if allocations[warehouse.id]
+        )
+        used_warehouses = []
+        for plan in warehouse_plans:
+            used_warehouses.append(plan.warehouse)
+
+        # used as tie breaker
+        inventory_score = sum(
+            self._warehouse_inventory_score(warehouse.id, line_items) for warehouse in used_warehouses
+        )
+
+        return CandidatePlan(
+            warehouse_plans=warehouse_plans,
+            fulfilled_by_sku=fulfilled_by_sku,
+            fulfilled_units=sum(fulfilled_by_sku.values()),
+            warehouse_count=len(used_warehouses),
+            proximity_score=tuple(
+                self._region_rank(destination, warehouse.region) for warehouse in used_warehouses
+            ),
+            inventory_score=inventory_score,
+        )
+
+    def _warehouse_inventory_score(self, warehouse_id: str, line_items: list[OrderLineItem]) -> int:
+        return sum(self.repository.warehouse_sku_count(warehouse_id, item.sku) for item in line_items)
 
     @classmethod
     def _region_rank(cls, destination: Region, warehouse_region: Region) -> int:

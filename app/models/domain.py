@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import Enum
 
 
@@ -18,3 +19,10 @@ class FulfillmentStatus(str, Enum):
 class UnfulfillableReason(str, Enum):
     SKU_NOT_FOUND = "SKU_NOT_FOUND"
     INSUFFICIENT_INVENTORY = "INSUFFICIENT_INVENTORY"
+
+
+@dataclass(frozen=True)
+class Warehouse:
+    id: str
+    name: str
+    region: Region
